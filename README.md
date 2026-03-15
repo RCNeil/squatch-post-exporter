@@ -60,11 +60,7 @@ Tools → Squatch Post Exporter
 4. The plugin will:
 
 - Generate the CSV file
-- Save it to:
-- 
-```
-/wp-content/uploads/squatch-exports/
-```
+- Save it to:`/wp-content/uploads/squatch-exports/`
 
 5. A **download link** will appear when the export completes.
 
