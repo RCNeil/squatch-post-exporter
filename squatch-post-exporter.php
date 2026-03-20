@@ -81,7 +81,7 @@ add_action('admin_head', function() {
 			margin: 0 !important;
 			padding: 0 !important;
 		}
-		#post-export-progress {
+		#squatch-plugin-progress {
 			margin: 12px 0;
 			background: #eee;
 			border: 1px solid #ccc;
@@ -91,13 +91,13 @@ add_action('admin_head', function() {
 			border-radius: 6px;
 			overflow: hidden;
 		}
-		#post-export-progress-bar {
+		#squatch-plugin-progress-bar {
 			background: #0073aa;
 			width: 0%;
 			height: 100%;
 			transition: width 0.3s ease;
 		}
-		#post-export-output {
+		#squatch-plugin-output {
 			overflow: auto;
 			max-height: 400px;
 			background: #1d2327;
@@ -105,14 +105,14 @@ add_action('admin_head', function() {
 			border-radius: 8px;
 			color: white;
 		}
-		#post-export-output strong,
-		#post-export-output a {
+		#squatch-plugin-output strong,
+		#squatch-plugin-output a {
 			color: #ffd747;
 		}
-		#post-export-output span {
+		#squatch-plugin-output span {
 			display: block;
 		}
-		#post-export-summary {
+		#squatch-plugin-summary {
 			padding: 20px 0 48px 0;
 			font-size: 16px;
 			font-weight: bold;
@@ -183,9 +183,9 @@ function squatch_post_exporter_page() {
 	echo '<button type="submit" class="button button-primary">Export Posts</button>';
 	echo '</form>';
 
-	echo '<div id="post-export-progress"><div id="post-export-progress-bar"></div></div>';
-	echo '<div id="post-export-output"></div>';
-	echo '<div id="post-export-summary"></div>';
+	echo '<div id="squatch-plugin-progress"><div id="squatch-plugin-progress-bar"></div></div>';
+	echo '<div id="squatch-plugin-output"></div>';
+	echo '<div id="squatch-plugin-summary"></div>';
 	echo '</div>';
 	?>
 	<script>
@@ -197,9 +197,9 @@ function squatch_post_exporter_page() {
 			var postType = $('#post-type').val();
 
 			// Clear any previous output/progress
-			//$('#post-export-output').html('');
-			//$('#post-export-summary').html('');
-			//$('#post-export-progress-bar').css('width','0%');
+			//$('#squatch-plugin-output').html('');
+			//$('#squatch-plugin-summary').html('');
+			//$('#squatch-plugin-progress-bar').css('width','0%');
 
 			// Trigger PHP CSV download via POST
 			$.ajax({
@@ -211,28 +211,28 @@ function squatch_post_exporter_page() {
 					_nonce: '<?php echo wp_create_nonce("post_export_nonce"); ?>'
 				},
 				beforeSend: function() {
-					$('#post-export-output').append('Starting export...<br />');
+					$('#squatch-plugin-output').append('Starting export...<br />');
 				},
 				success: function(response) {
 					if (response.success && response.data.file_url) {
-						$('#post-export-output').append(
+						$('#squatch-plugin-output').append(
 							'Export complete. ' +
 							'Rows: ' + response.data.post_count + ', ' +
 							'File size: ' + response.data.file_size + '<br />' +
 							'CSV file: <a href="' + response.data.file_url + '" target="_blank">' + response.data.file_url + '</a><br />'
 						);
 					} else {
-						$('#post-export-output').append('<span style="color:red;">Export failed. Check console for details.</span>');
+						$('#squatch-plugin-output').append('<span style="color:red;">Export failed. Check console for details.</span>');
 						console.error('Export failed', response);
 					}
 				},
 				error: function(err) {
-					$('#post-export-output').append('<p style="color:red;">AJAX error. See console.</p>');
+					$('#squatch-plugin-output').append('<p style="color:red;">AJAX error. See console.</p>');
 					console.error('AJAX error', err);
 				},
 				complete: function() {
 					$form.removeClass('processing');
-					var $output = $('#post-export-output');
+					var $output = $('#squatch-plugin-output');
 					$output.scrollTop($output[0].scrollHeight);
 				}
 			});
