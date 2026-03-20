@@ -36,7 +36,7 @@ function squatch_post_exporter_settings_link($links) {
 }
 
 add_filter('admin_footer_text', 'squatch_admin_footer_text');
-function squatch_admin_footer_text($footer_text) {
+function squatch_admin_footer_text_exporter($footer_text) {
 	$screen = get_current_screen();
 	if ($screen && $screen->id === 'tools_page_squatch-post-exporter') {
 		$img_url = SQUATCH_EXPORTER_PLUGIN . 'assets/built-by-squatch.svg'; 
