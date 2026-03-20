@@ -159,7 +159,7 @@ function squatch_post_exporter_page() {
 	$img_url = SQUATCH_PLUGIN_URL . 'assets/squatch-mark-yellow.svg'; 
 
 	echo '<div class="wrap">';
-	echo '<div class="squatch-plugin-header"><img src="' . esc_url($img_url). '" alt="Built By Squatch Creative"><div class="squatch-header-text"><h1>Squatch Post Exporter</h1><p>Export your posts to a CSV. <a href="https://github.com/RCNeil/" target="_blank">View Details</a></p></div></div>';
+	echo '<div class="squatch-plugin-header"><img src="' . esc_url($img_url). '" alt="Built By Squatch Creative"><div class="squatch-header-text"><h1>Squatch Post Exporter</h1><p>Export your posts to a CSV. <a href="https://github.com/RCNeil/squatch-post-exporter" target="_blank">View Details</a></p></div></div>';
 
 	echo '<form id="post-export-form" method="POST" action="' . esc_url(admin_url('admin-ajax.php')) . '" target="_blank">';
 	echo '<input type="hidden" name="action" value="post_export_generate_csv">';
