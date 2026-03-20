@@ -35,10 +35,9 @@ function squatch_post_exporter_settings_link($links) {
 	return $links;
 }
 
+add_filter('admin_footer_text', 'squatch_admin_footer_text');
 function squatch_admin_footer_text($footer_text) {
 	$screen = get_current_screen();
-
-	// Only show on our plugin page
 	if ($screen && $screen->id === 'tools_page_squatch-post-exporter') {
 		$img_url = SQUATCH_PLUGIN_URL . 'assets/built-by-squatch.svg'; 
 		ob_start();
@@ -52,9 +51,9 @@ function squatch_admin_footer_text($footer_text) {
 		return ob_get_clean();
 	}
 
-	return $footer_text; // Default for other pages
+	return $footer_text;
 }
-add_filter('admin_footer_text', 'squatch_admin_footer_text');
+
 
 add_action('admin_head', function() {
 	$screen = get_current_screen();
