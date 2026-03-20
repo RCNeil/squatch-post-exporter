@@ -11,8 +11,8 @@ Author URI: https://squatchcreative.com
 $plugin_data = get_file_data(__FILE__,array('Version' => 'Version'));
 $plugin_version = $plugin_data['Version'];
 
-define('SQUATCH_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('SQUATCH_PLUGIN_PATH', plugin_dir_path(__FILE__));
+define('SQUATCH_EXPORTER_PLUGIN', plugin_dir_url(__FILE__));
+define('SQUATCH_EXPORTER_PATH', plugin_dir_path(__FILE__));
 
 
 
@@ -39,7 +39,7 @@ add_filter('admin_footer_text', 'squatch_admin_footer_text');
 function squatch_admin_footer_text($footer_text) {
 	$screen = get_current_screen();
 	if ($screen && $screen->id === 'tools_page_squatch-post-exporter') {
-		$img_url = SQUATCH_PLUGIN_URL . 'assets/built-by-squatch.svg'; 
+		$img_url = SQUATCH_EXPORTER_PLUGIN . 'assets/built-by-squatch.svg'; 
 		ob_start();
 		?>
 		<span id="footer-thankyou">
@@ -156,7 +156,7 @@ add_action('admin_head', function() {
 function squatch_post_exporter_page() {
 	$uploads_dir = WP_CONTENT_DIR . '/uploads';
 	$folders = array_filter(glob($uploads_dir . '/*'), 'is_dir');
-	$img_url = SQUATCH_PLUGIN_URL . 'assets/squatch-mark-yellow.svg'; 
+	$img_url = SQUATCH_EXPORTER_PLUGIN . 'assets/squatch-mark-yellow.svg'; 
 
 	echo '<div class="wrap">';
 	echo '<div class="squatch-plugin-header"><img src="' . esc_url($img_url). '" alt="Built By Squatch Creative"><div class="squatch-header-text"><h1>Squatch Post Exporter</h1><p>Export your posts to a CSV. <a href="https://github.com/RCNeil/squatch-post-exporter" target="_blank">View Details</a></p></div></div>';
