@@ -35,7 +35,7 @@ function squatch_post_exporter_settings_link($links) {
 	return $links;
 }
 
-add_filter('admin_footer_text', 'squatch_admin_footer_text');
+add_filter('admin_footer_text', 'squatch_admin_footer_text_exporter');
 function squatch_admin_footer_text_exporter($footer_text) {
 	$screen = get_current_screen();
 	if ($screen && $screen->id === 'tools_page_squatch-post-exporter') {
