@@ -297,9 +297,9 @@ function post_export_generate_csv() {
 	
 	// TAXONOMIES
 	foreach($taxonomies as $tax) {
-    	$header[] = 'TAXONOMY_LABEL:' . $tax->label;
-    	$header[] = 'TAXONOMY_NAME:' . $tax->name;
-    }
+		$header[] = 'TAXONOMY_TERM_NAME:' . $tax->name;
+		$header[] = 'TAXONOMY_TERM_SLUG:' . $tax->name;
+	}
 	
 	// POSTMETA 
     $meta_keys = $wpdb->get_col($wpdb->prepare("
