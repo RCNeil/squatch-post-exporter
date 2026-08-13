@@ -3,7 +3,7 @@
 Plugin Name: Squatch Post Exporter
 Plugin URI: https://squatchcreative.com
 Description: Takes posts and puts them in a simple CSV
-Version: 1.009
+Version: 1.012
 Author: Squatch Creative
 Author URI: https://squatchcreative.com
 */
@@ -294,30 +294,34 @@ function post_export_generate_csv() {
 		'Content',
 		'Featured Image URL'
 	);
-	foreach ($taxonomies as $tax) {
-		$header[] = $tax->label;   // Term names
-		$header[] = $tax->name;    // Term slugs
-	}
 	
-	// Discover meta keys for this post type
-	$meta_keys = $wpdb->get_col($wpdb->prepare("
-		SELECT DISTINCT pm.meta_key
-		FROM {$wpdb->postmeta} pm
-		INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
-		WHERE p.post_type = %s
-	", $post_type));
-	$exclude_meta_keys = array(
-		'_edit_lock',
-		'_edit_last',
-		'_thumbnail_id',
-		'_header_footer_hide_header',
-		'_header_footer_hide_footer',
-	);
+	// TAXONOMIES
+	foreach($taxonomies as $tax) {
+    	$header[] = 'TAXONOMY_LABEL:' . $tax->label;
+    	$header[] = 'TAXONOMY_NAME:' . $tax->name;
+    }
+	
+	// POSTMETA 
+    $meta_keys = $wpdb->get_col($wpdb->prepare("
+    	SELECT DISTINCT pm.meta_key
+    	FROM {$wpdb->postmeta} pm
+    	INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+    	WHERE p.post_type = %s
+    ", $post_type));
+   $exclude_meta_keys = array(
+    	'_edit_lock',
+    	'_edit_last',
+    	'_thumbnail_id',
+    	'_wp_old_slug',
+    	'_wp_trash_meta_status',
+    	'_wp_trash_meta_time',
+    	'_wp_desired_post_slug',
+    	'_wp_page_template',
+    );
 	$meta_keys = array_values(array_diff($meta_keys, $exclude_meta_keys));
-
-	// Append meta columns
-	$header = array_merge($header, $meta_keys);
-
+    foreach($meta_keys as $meta_key) {
+    	$header[] = 'POSTMETA:' . $meta_key;
+    }
 	fputcsv($output, $header);
 
 	foreach ($posts as $post) {
@@ -358,14 +362,39 @@ function post_export_generate_csv() {
 
 		// Add meta values
 		foreach ($meta_keys as $key) {
-			$value = get_post_meta($post->ID, $key, true);
-
-			if (is_array($value) || is_object($value)) {
-				$value = json_encode($value);
-			}
-
-			$row[] = $value;
-		}
+        	$value = get_post_meta($post->ID, $key, true);
+        	$field = get_field_object($key, $post->ID);
+        
+        	if ($field && $field['type'] === 'image') {
+        		if (is_array($value)) {
+        			$value = $value['url'] ?? '';
+        		} elseif (is_numeric($value)) {
+        			$value = wp_get_attachment_url($value);
+        		}
+        	} elseif ($field && $field['type'] === 'gallery') {
+        		$urls = [];
+        
+        		foreach ((array) $value as $image) {
+        			if (is_array($image)) {
+        				$url = $image['url'] ?? '';
+        			} elseif (is_numeric($image)) {
+        				$url = wp_get_attachment_url($image);
+        			} else {
+        				$url = $image;
+        			}
+        
+        			if ($url) {
+        				$urls[] = $url;
+        			}
+        		}
+        
+        		$value = json_encode($urls);
+        	} elseif (is_array($value) || is_object($value)) {
+        		$value = json_encode($value);
+        	}
+        
+        	$row[] = $value;
+        }
 
 		fputcsv($output, $row);
 	}
