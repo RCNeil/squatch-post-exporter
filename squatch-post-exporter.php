@@ -3,7 +3,7 @@
 Plugin Name: Squatch Post Exporter
 Plugin URI: https://squatchcreative.com
 Description: Takes posts and puts them in a simple CSV
-Version: 1.012
+Version: 1.014
 Author: Squatch Creative
 Author URI: https://squatchcreative.com
 */
@@ -276,7 +276,8 @@ function post_export_generate_csv() {
 		wp_mkdir_p($export_dir);
 	}
 
-	$filename = $post_type . '-export-' . date('Y-m-d_H-i-s') . '.csv';
+	$site_name = sanitize_title(get_bloginfo('name'));
+	$filename = $site_name . '-' . $post_type . '-export-' . date('Y-m-d_H-i-s') . '.csv';
 	$filepath = $export_dir . $filename;
 
 	$output = fopen($filepath, 'w');
@@ -361,40 +362,52 @@ function post_export_generate_csv() {
 		}
 
 		// Add meta values
-		foreach ($meta_keys as $key) {
-        	$value = get_post_meta($post->ID, $key, true);
-        	$field = get_field_object($key, $post->ID);
-        
-        	if ($field && $field['type'] === 'image') {
-        		if (is_array($value)) {
-        			$value = $value['url'] ?? '';
-        		} elseif (is_numeric($value)) {
-        			$value = wp_get_attachment_url($value);
-        		}
-        	} elseif ($field && $field['type'] === 'gallery') {
-        		$urls = [];
-        
-        		foreach ((array) $value as $image) {
-        			if (is_array($image)) {
-        				$url = $image['url'] ?? '';
-        			} elseif (is_numeric($image)) {
-        				$url = wp_get_attachment_url($image);
-        			} else {
-        				$url = $image;
-        			}
-        
-        			if ($url) {
-        				$urls[] = $url;
-        			}
-        		}
-        
-        		$value = json_encode($urls);
-        	} elseif (is_array($value) || is_object($value)) {
-        		$value = json_encode($value);
-        	}
-        
-        	$row[] = $value;
-        }
+		foreach($meta_keys as $key) {
+			$value = get_post_meta($post->ID, $key, true);
+			$field = false;
+
+			if(function_exists('get_field_object')) {
+				$field = get_field_object($key, $post->ID);
+			}
+
+			switch($field['type'] ?? '') {
+				case 'image':
+					if(is_array($value)) {
+						$value = $value['url'] ?? '';
+					} elseif(is_numeric($value)) {
+						$value = wp_get_attachment_url($value);
+					}
+					break;
+
+				case 'gallery':
+					$urls = [];
+
+					foreach((array) $value as $image) {
+						if(is_array($image)) {
+							$url = $image['url'] ?? '';
+						} elseif(is_numeric($image)) {
+							$url = wp_get_attachment_url($image);
+						} else {
+							$url = $image;
+						}
+
+						if($url) {
+							$urls[] = $url;
+						}
+					}
+
+					$value = json_encode($urls);
+					break;
+
+				default:
+					if(is_array($value) || is_object($value)) {
+						$value = json_encode($value);
+					}
+					break;
+			}
+
+			$row[] = $value;
+		}
 
 		fputcsv($output, $row);
 	}
